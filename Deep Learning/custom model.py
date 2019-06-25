@@ -1,7 +1,10 @@
 from tensorflow.keras import Input, Dense, Flatten, LSTM
 from keras.models import Model, Sequential
+import pandas as pd 
 
 input_size = 9
+
+df = pd.read_csv("adjusted.csv")
 
 data_input = Input(shape=(input_size,))
 
