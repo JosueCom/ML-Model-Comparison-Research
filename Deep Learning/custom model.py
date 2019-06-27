@@ -13,8 +13,8 @@ Y = df.iloc[:, -1].to_numpy()
 
 data_input = Input(shape=(input_size,))
 
-hidden = Dense(20, activation="softplus")(data_input)
-hidden = Dense(10, activation="softplus")(hidden)
+hidden = Dense(20, activation="softmax")(data_input)
+hidden = Dense(10, activation="softmax")(hidden)
 hidden = Dropout(0.2)(hidden)
 data_output = Dense(1, activation="sigmoid")(hidden)
 
