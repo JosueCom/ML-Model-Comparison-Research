@@ -39,6 +39,16 @@ def metrics_(y_true, y_pred):
     sensitivity = cm[1,1]/(cm[1,1] + cm[0, 0])
     precision = cm[1,1]/(cm[1,1] + cm[0, 1])
     return [accuracy, sensitivity, specificity, precision]
+def probability_predictions_as_binary(xTest, guesses)
+    guesses_total = []
+    for i in range(len(xTest)):
+        benign = np.asscalar(guesses[i][0])
+        malignant = np.asscalar(guesses[i][1])
+        if benign > malignant:
+            guesses_total.append(0)
+        else:
+            guesses_total.append(1)
+    return guesses_total
 #tensorflow 4 layer model predictions
 def deep_learning_4_layer_predictions(xTrain, yTrain, second_layer_length, third_layer_length):
     
@@ -51,17 +61,9 @@ def deep_learning_4_layer_predictions(xTrain, yTrain, second_layer_length, third
     model1.compile(optimizer=tf.train.AdamOptimizer(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     model1.fit(xTrain, yTrain, epochs=100)
     
-    #return the guesses as an array
+    
     guesses = model.predict(xTest)
-    guesses_total = []
-    for i in range(len(xTest)):
-        benign = np.asscalar(guesses[i][0])
-        malignant = np.asscalar(guesses[i][1])
-        if benign > malignant:
-            guesses_total.append(0)
-        else:
-            guesses_total.append(1)
-    return guesses_total
+    return probability_predictions_as_binary(xTest, guesses)
 #tensorflow 3 layer model predictions
 def deep_learning_3_predictions(xTrain, yTrain, second_layer_length):
     
@@ -72,17 +74,9 @@ def deep_learning_3_predictions(xTrain, yTrain, second_layer_length):
     ])
     model.compile(optimizer=tf.train.AdamOptimizer(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     model.fit(xTrain, yTrain, epochs=100)
-    #return the guesses as an array
+    #return the guesses as an array (tensorflow makes them as probabilities but we need only 1's and 0's)
     guesses = model.predict(xTest)
-    guesses_total = []
-    for i in range(len(xTest)):
-        benign = np.asscalar(guesses[i][0])
-        malignant = np.asscalar(guesses[i][1])
-        if benign > malignant:
-            guesses_total.append(0)
-        else:
-            guesses_total.append(1)
-    return guesses_total
+    return probability_predictions_as_binary(xTest, guesses)
 
 
 
@@ -160,6 +154,7 @@ for i in range(10):
     rand_state_collumn = metrics_(lr_guesses, yTest) + metrics_(svc_w_guesses, yTest)
     + metrics_(svc_wo_guesses, yTest) + metrics_(rf_guesses, yTest) + metrics_(knn_one_guesses, yTest) + 
     metrics_(naive_guesses, yTest) + metrics_(decision_tree_guesses, yTest) + metrics_(eclf_guesses, yTest)
+    #deep learning models list concatination
     #+ metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + 
     #metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + metrics_(y_true, y_pred)
     #+ metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + 
