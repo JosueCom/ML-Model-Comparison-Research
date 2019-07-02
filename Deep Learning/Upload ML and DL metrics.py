@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# In[1]:
 
 
 #import libraries and data
@@ -10,35 +10,39 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 
+import tensorflow as tf
 from tensorflow.keras.layers import Input, Dense, Flatten, LSTM, Dropout
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.metrics import Precision, Recall
+
+import itertools
 
 df = pd.read_csv("adjusted.csv")
 X = np.array(df.drop(columns=[' Class']))
 Y = np.array(df.iloc[:, -1])
 
 
-# In[4]:
+# In[2]:
 
 
 #give the various metrics based on actual and predicted data returned as a list
 def metrics_(y_true, y_pred):
-    cm = confusion_matrix(y_true,y_pred)
-    total=sum(sum(cm))
-    accuracy = (cm[0,0]+cm[1,1])/total
-    specificity = cm[1, 0]/(cm[1,0]+cm[0,1])
-    sensitivity = cm[1,1]/(cm[1,1] + cm[0, 0])
-    precision = cm[1,1]/(cm[1,1] + cm[0, 1])
+    accuracy = accuracy_score(y_true, y_pred)
+    precision = precision_score(y_true, y_pred)
+    sensitivity = recall_score(y_true, y_pred)
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    
+    specificity = tn/(tn+fp)
+    
     return [accuracy, sensitivity, specificity, precision]
 
-def two_probability_predictions_as_binary(xTest, guesses)
+def two_probability_predictions_as_binary(xTest, guesses):
     guesses_total = []
     for i in range(len(xTest)):
         benign = np.asscalar(guesses[i][0])
@@ -49,7 +53,7 @@ def two_probability_predictions_as_binary(xTest, guesses)
             guesses_total.append(1)
     return guesses_total
 
-def one_probability_predictions_as_binary(xTest, guesses)
+def one_probability_predictions_as_binary(xTest, guesses):
     guesses_total = []
     for i in range(len(xTest)):
         probability = np.asscalar(guesses[i][0])
@@ -60,15 +64,15 @@ def one_probability_predictions_as_binary(xTest, guesses)
     return guesses_total
 
 #tensorflow 4 layer model predictions
-def deep_learning_4_layer_predictions(xTrain, yTrain, second_layer_length, third_layer_length):
+def deep_learning_4_predictions(xTrain, yTrain, second_layer_length, third_layer_length):
     model = Sequential([
     Flatten(input_shape=np.shape(xTrain[0])),
     Dense(second_layer_length, activation=tf.nn.relu),
     Dense(third_layer_length, activation=tf.nn.relu),
     Dense(len(np.unique(yTrain)), activation=tf.nn.softmax)
     ])
-    model1.compile(optimizer=tf.train.AdamOptimizer(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model1.fit(xTrain, yTrain, epochs=100)
+    model.compile(optimizer=tf.train.AdamOptimizer(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    model.fit(xTrain, yTrain, epochs=100)
     
     
     guesses = model.predict(xTest)
@@ -89,9 +93,9 @@ def deep_learning_3_predictions(xTrain, yTrain, second_layer_length):
     guesses = model.predict(xTest)
     return two_probability_predictions_as_binary(xTest, guesses)
 
-def custom_model_predictions(xTrain, yTrain, second_layer_length, third_layer_length, dropout)
+def custom_model_predictions(xTrain, yTrain, second_layer_length, third_layer_length, dropout):
     #basically the shape of x
-    input_size = 9
+    input_size = 10
     data_input = Input(shape=(input_size,))
     hidden = Dense(second_layer_length, activation="softplus")(data_input)
     hidden = Dense(third_layer_length, activation="softmax")(hidden)
@@ -106,16 +110,19 @@ def custom_model_predictions(xTrain, yTrain, second_layer_length, third_layer_le
     return one_probability_predictions_as_binary(xTest, guesses)
 
 
-# In[2]:
+# In[ ]:
 
 
 #open "Rows: Acc Sens Spec Prec; Cols: Random_State Avg Standard_Dev.csv", & put into pandas df
-df_metrics = pd.read_csv("Rows: Acc Sens Spec Prec; Cols: Random_State Avg Standard_Dev.csv")
-   
+df_metrics = pd.read_csv("Rows- Acc Sens Spec Prec; Cols- Random_State Avg Standard_Dev.csv")
+#set collumns equal to zero before running, except for the 'row names' collumn.
+for col in df_metrics.columns:
+   if col != 'Name':
+       df_metrics[col].values[:] = 0
 #from random state 0 through 9 (inclusive), add to data frame we will use for the csv
 for i in range(10):
    random_state = i
-   Train, xTest, yTrain, yTest = train_test_split(X, Y, test_size = 0.1, random_state=random_state)
+   xTrain, xTest, yTrain, yTest = train_test_split(X, Y, test_size = 0.1, random_state=random_state)
    yTrain, yTest = yTrain[:,np.newaxis], yTest[:,np.newaxis]
    
    
@@ -155,29 +162,66 @@ for i in range(10):
    eclf_guesses = ensemble.predict(xTest)
    
    #various deep learning models
-   
+   #NN 3 layer 300
+   guesses_3_300 = deep_learning_3_predictions(xTrain, yTrain, 300)
+   #NN 4 layer 150 110
+   guesses_4_150_110 = deep_learning_4_predictions(xTrain, yTrain, 150, 110)
+   #NN 3 layer 200
+   guesses_3_200 = deep_learning_3_predictions(xTrain, yTrain, 200)
+   #NN 3 layer 180
+   guesses_3_180 = deep_learning_3_predictions(xTrain, yTrain, 180)
+   #NN 3 layer 160
+   guesses_3_160 = deep_learning_3_predictions(xTrain, yTrain, 160)
+   #NN 3 layer 120
+   guesses_3_120 = deep_learning_3_predictions(xTrain, yTrain, 120)
+   #NN 3 layer 80
+   guesses_3_80 = deep_learning_3_predictions(xTrain, yTrain, 80)
+   #custom model
+   guesses_custom = custom_model_predictions(xTrain, yTrain, 20, 10, .2)
+   #voting neural net
+       #WILL DO LATER IF WE HAVE TIME
    
    #turn all the metrics into a single list
-   rand_state_collumn = metrics_(lr_guesses, yTest) + metrics_(svc_w_guesses, yTest)
-   + metrics_(svc_wo_guesses, yTest) + metrics_(rf_guesses, yTest) + metrics_(knn_one_guesses, yTest) + 
-   metrics_(naive_guesses, yTest) + metrics_(decision_tree_guesses, yTest) + metrics_(eclf_guesses, yTest)
-   #deep learning models list concatination
-   #+ metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + 
-   #metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + metrics_(y_true, y_pred)
-   #+ metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + metrics_(y_true, y_pred) + 
-   #metrics_(y_true, y_pred)
-   
+   rand_state_collumn = list(itertools.chain(metrics_(yTest, lr_guesses), 
+                                             metrics_(yTest, svc_w_guesses),
+                                             metrics_(yTest, svc_wo_guesses),
+                                             metrics_(yTest, rf_guesses),
+                                             metrics_(yTest, knn_one_guesses), 
+                                             metrics_(yTest, naive_guesses),
+                                             metrics_(yTest, decision_tree_guesses),
+                                             metrics_(yTest, eclf_guesses),
+                                             metrics_(yTest, guesses_3_300), 
+                                             metrics_(yTest, guesses_4_150_110),
+                                             metrics_(yTest, guesses_3_200), 
+                                             metrics_(yTest, guesses_3_180),
+                                             metrics_(yTest, guesses_3_160), 
+                                             metrics_(yTest, guesses_3_120),
+                                             metrics_(yTest, guesses_3_80), 
+                                             metrics_(yTest, guesses_custom)))
+                                               
    #add the various models as a collumn (based on random state) to the df
    df_metrics[str(i)] = rand_state_collumn
    
    #compute average of the various collumns and add as another collumn named avg
-   df_metrics['avg'] = df_metrics['avg'] + df_metrics[str(i)]
+   df_metrics['Avg'] = df_metrics['Avg'] + df_metrics[str(i)]
 
    
    
-df_metrics['avg'] = df_metrics['avg'] / 10    
+df_metrics['Avg'] = df_metrics['Avg'] / 10    
 
 
 #send df to csv
-df_metrics.to_csv('Rows: Acc Sens Spec Prec; Cols: Random_State Avg Standard_Dev.csv')
+df_metrics.to_csv('Rows- Acc Sens Spec Prec; Cols- Random_State Avg Standard_Dev.csv')
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
