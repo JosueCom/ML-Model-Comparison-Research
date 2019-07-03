@@ -212,7 +212,7 @@ df_metrics['Avg'] = df_metrics['Avg'] / 10
 #calculate standard deviation of all rows that exist in the random state collumns and add as new column
 stdev = []
 
-for r in df_metrics.rows:
+for r, row in df.iterrows():
    row = df_metrics.iloc[r]
    list_of_row_entries = []
    #find all row entries where the columns are labeled with a random_state
