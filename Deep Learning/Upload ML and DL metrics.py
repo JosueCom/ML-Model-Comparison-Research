@@ -110,7 +110,7 @@ def custom_model_predictions(xTrain, yTrain, second_layer_length, third_layer_le
     return one_probability_predictions_as_binary(xTest, guesses)
 
 
-# In[ ]:
+# In[3]:
 
 
 #open "Rows: Acc Sens Spec Prec; Cols: Random_State Avg Standard_Dev.csv", & put into pandas df
@@ -207,17 +207,27 @@ for i in range(10):
 
    
    
-df_metrics['Avg'] = df_metrics['Avg'] / 10    
+df_metrics['Avg'] = df_metrics['Avg'] / 10
 
+#calculate standard deviation of all rows that exist in the random state collumns and add as new column
+stdev = []
+
+for r in df_metrics.rows:
+   row = df_metrics.iloc[r]
+   list_of_row_entries = []
+   #find all row entries where the columns are labeled with a random_state
+   for c in range(10):
+       entry = row[str(c)]
+       list_of_row_entries.append(entry)
+   #now calculate stdev of list_of_row_entries
+   stdev_of_row = np.std(list_of_row_entries, ddof=0)
+   stdev.append(stdev_of_row)
+
+df_metrics['Std dev'] = stdev
+       
 
 #send df to csv
 df_metrics.to_csv('Rows- Acc Sens Spec Prec; Cols- Random_State Avg Standard_Dev.csv')
-
-
-# In[ ]:
-
-
-
 
 
 # In[ ]:
