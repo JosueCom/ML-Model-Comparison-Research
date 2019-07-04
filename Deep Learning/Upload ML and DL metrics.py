@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+<<<<<<< HEAD
 # In[8]:
+=======
+# In[1]:
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
 
 
 #import libraries and data
@@ -28,7 +32,11 @@ X = np.array(df.drop(columns=[' Class']))
 Y = np.array(df.iloc[:, -1])
 
 
+<<<<<<< HEAD
 # In[9]:
+=======
+# In[2]:
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
 
 
 #give the various metrics based on actual and predicted data returned as a list
@@ -64,12 +72,19 @@ def one_probability_predictions_as_binary(xTest, guesses):
     return guesses_total
 
 #tensorflow 4 layer model predictions
+<<<<<<< HEAD
 def deep_learning_4_dropout_predictions(xTrain, yTrain, second_layer_length, third_layer_length):
+=======
+def deep_learning_4_predictions(xTrain, yTrain, second_layer_length, third_layer_length):
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
     model = Sequential([
     Flatten(input_shape=np.shape(xTrain[0])),
     Dense(second_layer_length, activation=tf.nn.relu),
     Dense(third_layer_length, activation=tf.nn.relu),
+<<<<<<< HEAD
     Dropout(.2),
+=======
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
     Dense(len(np.unique(yTrain)), activation=tf.nn.softmax)
     ])
     model.compile(optimizer=tf.train.AdamOptimizer(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
@@ -94,6 +109,7 @@ def deep_learning_3_predictions(xTrain, yTrain, second_layer_length):
     guesses = model.predict(xTest)
     return two_probability_predictions_as_binary(xTest, guesses)
 
+<<<<<<< HEAD
 #tensorflow 3 layer model predictions with selu instead of relu
 def deep_learning_3_predictions_selu(xTrain, yTrain, second_layer_length):
     model = Sequential([
@@ -109,11 +125,14 @@ def deep_learning_3_predictions_selu(xTrain, yTrain, second_layer_length):
     guesses = model.predict(xTest)
     return two_probability_predictions_as_binary(xTest, guesses)
 
+=======
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
 def custom_model_predictions(xTrain, yTrain, second_layer_length, third_layer_length, dropout):
     #basically the shape of x
     input_size = 10
     data_input = Input(shape=(input_size,))
     hidden = Dense(second_layer_length, activation="softplus")(data_input)
+<<<<<<< HEAD
     hidden = Dense(third_layer_length, activation="softplus")(hidden)
     hidden = Dropout(dropout)(hidden)
     #output is of shape 1
@@ -133,6 +152,11 @@ def custom_model_predictions_selu_tanh(xTrain, yTrain, second_layer_length, thir
     hidden = Dense(third_layer_length, activation="tanh")(hidden)
     hidden = Dropout(dropout)(hidden)
     #output is of shape 1
+=======
+    hidden = Dense(third_layer_length, activation="softmax")(hidden)
+    hidden = Dropout(dropout)(hidden)
+    #noutput is of shape 1
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
     data_output = Dense(1, activation="sigmoid")(hidden)
     model = Model(inputs=data_input, outputs=data_output)
     model.compile(optimizer="adam", loss='binary_crossentropy', metrics=["accuracy"])
@@ -142,7 +166,11 @@ def custom_model_predictions_selu_tanh(xTrain, yTrain, second_layer_length, thir
     return one_probability_predictions_as_binary(xTest, guesses)
 
 
+<<<<<<< HEAD
 # In[10]:
+=======
+# In[3]:
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
 
 
 #open "Rows: Acc Sens Spec Prec; Cols: Random_State Avg Standard_Dev.csv", & put into pandas df
@@ -194,6 +222,7 @@ for i in range(10):
    eclf_guesses = ensemble.predict(xTest)
    
    #various deep learning models
+<<<<<<< HEAD
    #NN 3 layer 20 selu
    guesses_selu_3_20 = deep_learning_3_predictions_selu(xTrain, yTrain, 20)
    #NN 4 layer 32 16
@@ -206,10 +235,25 @@ for i in range(10):
    guesses_3_36 = deep_learning_3_predictions(xTrain, yTrain, 36)
    #NN 3 layer 120
    guesses_selu_40 = deep_learning_3_predictions_selu(xTrain, yTrain, 40)
+=======
+   #NN 3 layer 300
+   guesses_3_300 = deep_learning_3_predictions(xTrain, yTrain, 300)
+   #NN 4 layer 150 110
+   guesses_4_150_110 = deep_learning_4_predictions(xTrain, yTrain, 150, 110)
+   #NN 3 layer 200
+   guesses_3_200 = deep_learning_3_predictions(xTrain, yTrain, 200)
+   #NN 3 layer 180
+   guesses_3_180 = deep_learning_3_predictions(xTrain, yTrain, 180)
+   #NN 3 layer 160
+   guesses_3_160 = deep_learning_3_predictions(xTrain, yTrain, 160)
+   #NN 3 layer 120
+   guesses_3_120 = deep_learning_3_predictions(xTrain, yTrain, 120)
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
    #NN 3 layer 80
    guesses_3_80 = deep_learning_3_predictions(xTrain, yTrain, 80)
    #custom model
    guesses_custom = custom_model_predictions(xTrain, yTrain, 20, 10, .2)
+<<<<<<< HEAD
    
    
    '''   
@@ -218,6 +262,11 @@ for i in range(10):
    #NN 3 layer
    guesses_3_80 = deep_learning_3_predictions(xTrain, yTrain, 80)
    '''
+=======
+   #voting neural net
+       #WILL DO LATER IF WE HAVE TIME
+   
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
    #turn all the metrics into a single list
    rand_state_collumn = list(itertools.chain(metrics_(yTest, lr_guesses), 
                                              metrics_(yTest, svc_w_guesses),
@@ -227,12 +276,21 @@ for i in range(10):
                                              metrics_(yTest, naive_guesses),
                                              metrics_(yTest, decision_tree_guesses),
                                              metrics_(yTest, eclf_guesses),
+<<<<<<< HEAD
                                              metrics_(yTest, guesses_selu_3_20),
                                              metrics_(yTest, guesses_4_32_16), 
                                              metrics_(yTest, guesses_custom_selu_tanh),
                                              metrics_(yTest, guesses_3_32), 
                                              metrics_(yTest, guesses_3_36), 
                                              metrics_(yTest, guesses_selu_40),
+=======
+                                             metrics_(yTest, guesses_3_300), 
+                                             metrics_(yTest, guesses_4_150_110),
+                                             metrics_(yTest, guesses_3_200), 
+                                             metrics_(yTest, guesses_3_180),
+                                             metrics_(yTest, guesses_3_160), 
+                                             metrics_(yTest, guesses_3_120),
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
                                              metrics_(yTest, guesses_3_80), 
                                              metrics_(yTest, guesses_custom)))
                                                
@@ -249,7 +307,11 @@ df_metrics['Avg'] = df_metrics['Avg'] / 10
 #calculate standard deviation of all rows that exist in the random state collumns and add as new column
 stdev = []
 
+<<<<<<< HEAD
 for r, row in df_metrics.iterrows():
+=======
+for r, row in df.iterrows():
+>>>>>>> 05125449f219ee1c626d1a6a610c4e0f827077be
    row = df_metrics.iloc[r]
    list_of_row_entries = []
    #find all row entries where the columns are labeled with a random_state
