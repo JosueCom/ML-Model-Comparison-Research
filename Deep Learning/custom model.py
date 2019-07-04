@@ -57,4 +57,4 @@ print("\n%s: %.2f%%" % (model.metrics_names[4], scores[4]*100))
 
 model.summary()
 
-model.save("custom_model.h5")
+#model.save("custom_model.h5")
