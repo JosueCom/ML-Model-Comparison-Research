@@ -15,6 +15,8 @@ model = load_model("custom_model.h5")
 scores = model.evaluate(X, Y)
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 print("\n%s: %.2f%%" % (model.metrics_names[2], scores[2]*100))
+print("\n%s: %.2f%%" % (model.metrics_names[3], scores[3]*100))
+print("\n%s: %.2f%%" % (model.metrics_names[4], scores[4]*100))
 
 model.summary()
 

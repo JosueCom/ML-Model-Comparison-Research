@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[137]:
+# In[2]:
 
 
 import tensorflow as tf
@@ -18,7 +18,7 @@ xTrain, xTest, yTrain, yTest = train_test_split(X, Y, test_size = 0.2, random_st
 yTrain, yTest = yTrain[:,np.newaxis], yTest[:,np.newaxis]
 
 
-# In[138]:
+# In[3]:
 
 
 model1 = tf.keras.Sequential([
@@ -28,7 +28,7 @@ model1 = tf.keras.Sequential([
     tf.keras.layers.Dense(len(np.unique(yTrain)), activation=tf.nn.softmax)
 ])
 model1.compile(optimizer=tf.train.AdamOptimizer(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model1.fit(xTrain, yTrain, epochs=10)
+model1.fit(xTrain, yTrain, epochs=100)
 loss, acc = model1.evaluate(x=xTest, y=yTest)
 print('loss=', loss, 'acc=', acc)
 
